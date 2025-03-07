@@ -10,10 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+APPS_DIR = os.path.join(BASE_DIR, "apps")
+
+sys.path.append(APPS_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'user_profile',
-    'apis',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +77,7 @@ WSGI_APPLICATION = 'expenseTracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-os.environ['PGSERVICEFILE'] = '.pg_service.conf'
+os.environ['PGSERVICEFILE'] = '../.pg_service.conf'
 
 DATABASES = {
     "default": {
