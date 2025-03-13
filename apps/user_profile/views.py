@@ -100,6 +100,23 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Handles DELETE request to allow the authenticated user to delete their profile.
+        """
+        profile = self.get_queryset().first()
+        if not profile:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        profile.delete()
+        return Response(
+            {"detail": "Profile has been deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
     @action(detail=False, methods=['get'], url_path='me')
     def get_own_profile(self, request):
         """
