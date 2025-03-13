@@ -1,23 +1,18 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions, status, parsers
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.request import Request
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from .models import Profile
 from .utils import get_refresh_tokens 
-from .serializers import UserSerializer, RegistrationSerializer, ProfileSerializer
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser] # only admin can request the users
+from .serializers import UserSerializer, ProfileSerializer
 
 
 @api_view(["Post"])
-def register_view(request):
+def register_user_view(request):
     
-    register_serializer = RegistrationSerializer(data=request.data)
+    register_serializer = UserSerializer(data=request.data)
 
     if register_serializer.is_valid():
         user = register_serializer.save()
@@ -37,6 +32,21 @@ def register_view(request):
         return Response(token_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(register_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["DELETE"])
+@permission_classes([permissions.IsAuthenticated])
+def delete_user_view(request: Request) -> Response:
+    try:
+        user = User.objects.get(id=request.user.id)
+    except User.DoesNotExist:
+        return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    user.delete()
+    return Response({"detail": "User has been deleted successfully"},
+                    status=status.HTTP_204_NO_CONTENT)
 
 
 
