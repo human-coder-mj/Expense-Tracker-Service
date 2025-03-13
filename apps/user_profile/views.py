@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, parsers
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.request import Request
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from .models import Profile
@@ -38,9 +38,61 @@ def register_view(request):
 
     return Response(register_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(http_method_names=["GET"])
-def get_users_profile(request: Request) -> Response:
 
-    profile = Profile.objects.get(user=request.user)
-    profile_serializer = ProfileSerializer(profile, many=False)
-    return Response(profile_serializer.data, status=status.HTTP_200_OK)
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.FormParser]
+
+    def get_queryset(self):
+        """
+        Limits the queryset to only the profile of the authenticated user.
+        Prevents users from accessing other profiles.
+        """
+        return Profile.objects.filter(user=self.request.user)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Handles GET request to fetch the profile of the authenticated user.
+        """
+        
+        profile = self.get_queryset().first()
+        if not profile:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Handles PUT request to update the profile of the authenticated user.
+        Supports updating profile picture and other fields.
+        """
+        profile = self.get_queryset().first()
+        if not profile:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        data = request.data.copy()
+        data['user'] = request.user.pk  # Ensure user field remains correct
+        serializer = self.get_serializer(profile, data=data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='me')
+    def get_own_profile(self, request):
+        """
+        Custom action: Handles GET request to retrieve the authenticated user's profile.
+        """
+        return self.retrieve(request)
