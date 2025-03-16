@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import viewsets, permissions, status, parsers
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action, permission_classes
@@ -6,8 +7,9 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from .models import Profile
 from .utils import get_refresh_tokens 
-from .serializers import UserSerializer, ProfileSerializer
-
+from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerializer
+from django.contrib.auth import update_session_auth_hash
+from django.core.exceptions import ValidationError
 
 @api_view(["Post"])
 def register_user_view(request):
@@ -123,3 +125,40 @@ class ProfileViewSet(viewsets.ModelViewSet):
         Custom action: Handles GET request to retrieve the authenticated user's profile.
         """
         return self.retrieve(request)
+    
+@api_view(http_method_names=['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def change_password(request: Request) -> Response:
+    """
+    Allows an authenticated user to change their password.
+    Ensures the old password is correct and enforces password security.
+    """
+    user = request.user
+    serializer = ChangePasswordSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    old_password = serializer.validated_data.get("old_password")
+    new_password = serializer.validated_data.get("new_password")
+
+    if new_password == old_password:
+        return Response({"error": "New password cannot be the same as the old password."},
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    if not user.check_password(old_password):
+        return Response({"error": "Incorrect old password."},
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        validate_password(new_password, user=user)  # Django's built-in validation
+    except ValidationError as e:
+        return Response({"error": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(new_password)
+    user.save()
+
+    update_session_auth_hash(request, user)
+
+    return Response({'detail': 'Your password has been successfully changed.'},
+                    status=status.HTTP_200_OK)
