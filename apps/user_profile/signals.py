@@ -6,7 +6,7 @@ from .models import Profile
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance, firstName=instance.username)
+        Profile.objects.create(user=instance, firstName=instance.username, email=instance.email)
 
 @receiver(pre_delete, sender=User)
 def delete_user_profile(sender, instance, **kwargs):
