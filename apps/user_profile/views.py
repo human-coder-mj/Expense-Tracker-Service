@@ -11,29 +11,30 @@ from .serializers import UserSerializer, ProfileSerializer, ChangePasswordSerial
 from django.contrib.auth import update_session_auth_hash
 from django.core.exceptions import ValidationError
 
-@api_view(["Post"])
+@api_view(["POST"])
 def register_user_view(request):
-    
     register_serializer = UserSerializer(data=request.data)
 
     if register_serializer.is_valid():
         user = register_serializer.save()
 
-        token_serializer = TokenObtainSerializer(data=request.data)
-        if token_serializer.is_valid():
-            profile = Profile.objects.filter(user=user).first()
-            profile_serializer = ProfileSerializer(profile, many=False)
+        # Ensure a profile is created if needed
+        profile, created = Profile.objects.get_or_create(user=user)
 
-            tokens = get_refresh_tokens(user)
-
+        if profile:
             return Response(
-                {'profile': profile_serializer.data, 'tokens': tokens},
+                {"detail": "User registered successfully. Please log in."},
+                status=status.HTTP_201_CREATED
+            )
+        
+        if created:
+            return Response(
+                {"detail": "User already Exists. Please log in."},
                 status=status.HTTP_201_CREATED
             )
 
-        return Response(token_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     return Response(register_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["DELETE"])
 @permission_classes([permissions.IsAuthenticated])
