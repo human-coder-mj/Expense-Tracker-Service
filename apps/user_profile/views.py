@@ -128,7 +128,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     
 @api_view(http_method_names=['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def change_password(request: Request) -> Response:
+def change_password_view(request: Request) -> Response:
     """
     Allows an authenticated user to change their password.
     Ensures the old password is correct and enforces password security.
