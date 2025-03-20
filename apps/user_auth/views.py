@@ -1,12 +1,12 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.contrib.auth import authenticate
-from user_profile.models import Profile
 from user_profile.serializers import ProfileSerializer
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from user_profile.utils import get_refresh_tokens
-from rest_framework_simplejwt.tokens import RefreshToken
+from user_profile.models import Profile
 
 @api_view(["POST"])
 def login_user_view(request):
@@ -15,24 +15,15 @@ def login_user_view(request):
     """
     login_serializer = TokenObtainSerializer(data=request.data)
 
-    if not login_serializer.is_valid():
+    try:
+        login_serializer.is_valid(raise_exception=True)
+    except AuthenticationFailed:
         return Response(
             {"error": "Invalid credentials"},
             status=status.HTTP_401_UNAUTHORIZED
         )
 
     user = login_serializer.user
-
-    # Authenticate user to ensure correct password is provided
-    authenticated_user = authenticate(
-        username=user.username, password=request.data.get("password")
-    )
-
-    if not authenticated_user:
-        return Response(
-            {"error": "Invalid credentials"},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
 
     # Get the user's profile
     try:
