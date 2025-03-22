@@ -18,6 +18,7 @@ class Budget(models.Model):
         expenses: QueryDict = self.expenses_set.all()
         return expenses.aggregate(Sum('amount')).get('amount__sum') or 0
     
+    @property
     def remaining(self):
         """Dynamically calculate the remaining budget amount."""
         return self.amount - self.amount_used
