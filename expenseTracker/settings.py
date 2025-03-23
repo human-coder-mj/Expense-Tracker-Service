@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'user_profile',
     'user_auth',
     'user_budget',
+    'expense_system',
 ]
 
 MIDDLEWARE = [
