@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
 
 urlpatterns = [
-    path('api/expense' ,include((router.urls)))
+    path('api/user/expense/' ,include((router.urls)))
 ]
