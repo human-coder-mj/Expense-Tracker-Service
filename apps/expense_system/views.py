@@ -1,6 +1,7 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
 from .serializers import CategorySerializer
 from .models import Category
 
@@ -14,9 +15,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
         return Category.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-
-        serializer.save(user=self.request.user)
-
+        try:
+            serializer.save(user=self.request.user)
+        except IntegrityError:
+            raise ValidationError({"error": "This record already exists."})
+    
     def update(self, request, *args, **kwargs):
 
         instance = self.get_object()
