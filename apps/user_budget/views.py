@@ -28,7 +28,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         data['user'] = request.user.pk
 
         # Ensure the new amount is not less than existing expenses
-        total_expense_amount = current_budget.expenses_set.aggregate(Sum('amount'))['amount__sum'] or 0
+        total_expense_amount = current_budget.expenses_set.aggregate(Sum('expense_amount'))['expense_amount__sum'] or 0
         if 'amount' in data and float(data['amount']) < total_expense_amount:
             return Response("This amount is already used in some expense",
                                code=status.HTTP_424_FAILED_DEPENDENCY)

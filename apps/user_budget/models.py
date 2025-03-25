@@ -16,7 +16,7 @@ class Budget(models.Model):
     @property
     def amount_used(self):
         expenses: QueryDict = self.expenses_set.all()
-        return expenses.aggregate(Sum('amount')).get('amount__sum') or 0
+        return expenses.aggregate(Sum('expense_amount')).get('expense_amount__sum') or 0
     
     @property
     def remaining(self):
