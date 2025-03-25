@@ -21,10 +21,8 @@ class BudgetViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user) # Automatically assigns the authenticated user to the budget when creating.
 
     def update(self, request, pk=None):
-        try:
-            current_budget = Budget.objects.get(pk=pk, user=request.user)
-        except Budget.DoesNotExist:
-            raise NotFound(detail="Budget does not exist", code=status.HTTP_404_NOT_FOUND)
+
+        current_budget = self.get_object() # get_object() method handles the try and except block itself 
         
         data = request.data.copy()
         data['user'] = request.user.pk
@@ -45,10 +43,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
 
-        try:
-            budget = Budget.objects.get(pk=pk, user=request.user)
-        except Budget.DoesNotExist:
-            raise NotFound(detail="Budget does not exist", code=status.HTTP_404_NOT_FOUND)
+        budget = self.get_object()
 
         if budget.expenses_set.count() == 0:
             budget.delete()
