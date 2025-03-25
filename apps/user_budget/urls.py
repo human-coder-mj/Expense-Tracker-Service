@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(r'budget', BudgetViewSet, basename='budget')
 
 urlpatterns = [
-    path('api/', include((router.urls))),
+    path('api/user/', include((router.urls))),
 ]
