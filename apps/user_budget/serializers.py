@@ -8,7 +8,7 @@ class BudgetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Budget
-        fields = '__all__'
+        exclude = ('id',)
 
     def validate_amount(self, value):
         if value <= 0:
