@@ -4,8 +4,8 @@ from rest_framework import viewsets, status
 from rest_framework.exceptions import APIException, NotFound
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from .models import Budget
-from .serializers import BudgetSerializer
+from .models import Budget, Goal
+from .serializers import BudgetSerializer, GoalSerializer
 
 class BudgetViewSet(viewsets.ModelViewSet):
 
@@ -52,3 +52,32 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
         raise APIException("Budget consists multiple expenses. Remove all the associated expenses first.",
                            code=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class GoalViewSet(viewsets.ModelViewSet):
+    
+    serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Goal.objects.filter(user = self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user = self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        print(f"partial -> {partial}")
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
