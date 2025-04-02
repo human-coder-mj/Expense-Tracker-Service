@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Budget
+from .models import Budget, Goal
 
 class BudgetSerializer(serializers.ModelSerializer):
     remaining = serializers.ReadOnlyField()
@@ -22,3 +22,20 @@ class BudgetSerializer(serializers.ModelSerializer):
         if Budget.objects.filter(user=user, name=name).exists():
             raise serializers.ValidationError("A budget with this name already exists for this user.")
         return data
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    
+    progress = serializers.ReadOnlyField()    
+
+    class Meta:
+        model = Goal
+        fields = "__all__"
+        extra_kwargs = {
+            'user' : {"write_only" : True}
+        }
+
+    def validate_target_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Target amount must be greater than 0")
+        return value
