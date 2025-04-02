@@ -8,6 +8,29 @@ The Expense Tracker Service is a comprehensive system designed to help users man
 - **Expense Management**: Add, edit, and delete expenses with categories such as food, transportation, entertainment, etc.
 - **Income Tracking**: Record and categorize income sources.
 - **Budgeting**: Set monthly budgets and monitor progress.
+- **Goal Management**: Define and track personalized financial goals, such as saving for a vacation, paying off debt, or building an emergency fund.
+
+## Directory Structure
+    expense-tracker/
+    |── apps/                 # Sub-applications for modular design
+    │   ├── expenses_system/  # Expense tracking functionality       
+    │   ├── user_profile/     # User profile management
+    │   ├── user_budget/      # Budgeting functionality
+    │   └── user_auth/        # User authentication and authorization
+    |
+    ├── expenseTracker/       # Main Django application directory
+    │   ├── __init__.py       # Package initialization
+    │   ├── settings.py       # Django settings
+    │   ├── urls.py           # URL routing
+    │   ├── wsgi.py           # WSGI application
+    │   └── asgi.py           # ASGI application 
+    |
+    ├── manage.py             # Django management script
+    ├── requirements.txt      # Python dependencies
+    ├── .env                  # Environment variables
+    ├── .pg_service.conf      # Database Configuration
+    ├── .gitignore            # Git ignore file
+    └── README.md             # Project documentation
 
 ## System Architecture
 The system is built using a modular architecture to ensure scalability and maintainability.
@@ -16,10 +39,6 @@ The system is built using a modular architecture to ensure scalability and maint
 - **Framework**: Django with Django REST Framework for building RESTful APIs.
 - **Database**: PostgreSQL for storing user data, expenses, and budgets.
 - **Authentication**: JSON Web Tokens (JWT) for secure user authentication.
-
-### Deployment
-- **Hosting**: Deployed on cloud platforms such as AWS.
-- **CI/CD**: Automated pipelines for testing and deployment using GitHub Actions.
 
 ## Installation
 1. Clone the repository:
@@ -94,10 +113,3 @@ This documentation provides a comprehensive guide to all available endpoints, re
 2. Add your income and expenses with appropriate categories.
 3. Set a monthly budget to monitor your spending.
 4. View detailed reports and insights on the dashboard.
-
-## Contributing
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes and push them to your fork.
-4. Submit a pull request with a detailed description of your changes.
