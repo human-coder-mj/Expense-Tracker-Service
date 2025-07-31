@@ -49,23 +49,28 @@ The system is built using a modular architecture to ensure scalability and maint
     ```bash
     cd expense-tracker
     ```
-3. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Set up environment variables in a `.env` file:
-    ```plaintext
-    DJANGO_SECRET_KEY=<secret key for Django>
-    ```
-5. Start the development server:
+2. Create a python virtual environment:
     - **Windows**:
         ```powershell
-        python manage.py runserver
+        python -m venv venv
         ```
     - **Linux**:
         ```bash
-        python3 manage.py runserver
+        python3 -m venv venv
         ```
+4. Install dependencies:
+    - **Windows**:
+        ```powershell
+        pip install -r requirements.txt
+        ```
+    - **Linux**:
+        ```bash
+        pip3 install -r requirements.txt
+        ```
+5. Set up environment variables in a `.env` file:
+    ```plaintext
+    DJANGO_SECRET_KEY=<secret key for Django>
+    ```
 6. Configure Database Connectivity:
     - Create a `.pg_service.conf` file to store the database configuration:
         ```plaintext
@@ -98,6 +103,15 @@ The system is built using a modular architecture to ensure scalability and maint
             print(f"Database connection failed: {e}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+        ```
+7. Start the development server:
+    - **Windows**:
+        ```powershell
+        python manage.py runserver
+        ```
+    - **Linux**:
+        ```bash
+        python3 manage.py runserver
         ```
 
 ## API Documentation
