@@ -2,3 +2,4 @@
 db_connection_check.py
 __pycache__/
 .env
+venv/
