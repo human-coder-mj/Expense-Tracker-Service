@@ -43,13 +43,13 @@ The system is built using a modular architecture to ensure scalability and maint
 ## Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/expense-tracker.git
+    git clone https://github.com/your-username/Expense-Tracker-Service.git
     ```
 2. Navigate to the project directory:
     ```bash
     cd expense-tracker
     ```
-2. Create a python virtual environment:
+3. Create a python virtual environment:
     - **Windows**:
         ```powershell
         python -m venv venv
@@ -58,7 +58,16 @@ The system is built using a modular architecture to ensure scalability and maint
         ```bash
         python3 -m venv venv
         ```
-4. Install dependencies:
+4.  Activate the python virtual environment:
+    - **Windows**:
+        ```powershell
+        .\venv\Scripts\activate
+        ```
+    - **Linux**:
+        ```bash
+        venv/bin/activate
+        ```
+5. Install dependencies:
     - **Windows**:
         ```powershell
         pip install -r requirements.txt
@@ -67,11 +76,11 @@ The system is built using a modular architecture to ensure scalability and maint
         ```bash
         pip3 install -r requirements.txt
         ```
-5. Set up environment variables in a `.env` file:
+6. Set up environment variables in a `.env` file:
     ```plaintext
     DJANGO_SECRET_KEY=<secret key for Django>
     ```
-6. Configure Database Connectivity:
+7. Configure Database Connectivity:
     - Create a `.pg_service.conf` file to store the database configuration:
         ```plaintext
         [my_service]
@@ -104,7 +113,7 @@ The system is built using a modular architecture to ensure scalability and maint
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
         ```
-7. Start the development server:
+8. Start the development server:
     - **Windows**:
         ```powershell
         python manage.py runserver
